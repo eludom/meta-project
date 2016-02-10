@@ -4,7 +4,7 @@
 #+OPTIONS: num:nil p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
 #+OPTIONS: timestamp:t title:t toc:nil todo:t |:t
 #+TITLE: Thoughts about reorganizing my projects, org-agenda files, and git repos
-#+DATE: <2016-02-09 10:14:33 Tuesday>
+#+DATE: <2016-02-10 12:05:27 Wednesday>
 #+AUTHOR: George M Jones
 #+EMAIL: gmj@pobox.com
 #+LANGUAGE: en
@@ -14,9 +14,16 @@
 
 Thoughts about reorganizing my projects, org-agenda files, and git repos.
 
+* Problems
+  - My config files files are scattered all over by emacs, git, etc.
+  - I need to consistently organize my project files, agenda's etc
+  - I use different but sometimes overlapping files (mostly configs)
+    at work and at home
+  - All these files have different sensitivity/visibility requirements
+  - It all gets complicated, hard to understand and hard to manage.
 * Goals
-** Simplify the organization of my .org project files
-** Simplify the management of my .org project files
+** Simplify the organization of my configs and project files
+** Simplify the management of my configs and project files
    - e.g. fewer git repos
    - This will allow me to, for instance, to install my environment
      (emacs/org) on a new machine, pull down a few git repos and go.
@@ -34,9 +41,9 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
       in git somewhere so the local machine can die, be re-installed
       or go way and it will not impact my work (at least in terms of
       .orgifiled projects.
-** Don't treat people like projects
+** Treat people like people, not projects
 * Methods
-** Create one top-level dir per context (home, work...)
+** Create one top-level directory per CONTEXT (home, work...)
    e.g.
 
    #+begin_example
@@ -45,50 +52,49 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
    ~/work/	# things specific to work context
    #+end_example
 
-** Crate one git-repo per level of sensitivity per context (home/public, home/private)
+** Create one sub-directory per SCOPE per CONTEXT (home/public, home/private)
+
+   - SCOPE :: A SCOPE defines visibility within a context
+   
    e.g.
 
    #+begin_example
-   ~/home/public	# e.g. github repo
-   ~/home/limited	# e.g. non-github repo
-   ~/home/private	# e.g. non-github repo
+   ~/home/public	# global visibility (maybe on github)
+   ~/home/limited	# "need-to-know" visibility
+   ~/home/private	# "not on your life" visibility
 
-   ~/work/public	# e.g. "public" git repo at work
-   ~/work/limited	# e.g. "non-public" git repo at work
-   ~/work/private 	# e.g. "non-public" git repo at work
+   ~/work/public	# global visibility (maybe on github)
+   ~/work/COMPANYNAME   # company-wide visibility (maybe internal git repo)
+   ~/work/limited	# "need-to-know" visibility
+   ~/work/private 	# "not on your life" visibility
    #+end_example
 
-   Note, the =~/../public= repos might be the same across context
-   (e.g. my default dotfiles), but the others are likely to be
-   different, so disambiguation, selection or merging will be
-   necessary (e.g. switching between different =~/.ssh/= directories
+*** Define rules for visibility of each LEVEL OF SENSITIVITY
+    The rules may be context specific.  E.g. "public" for my "home"
+    CONTEXT may mean "OK to publish on github", but "public" at work
+    may mean "ok to publish on the internal company wiki visible to all
+    employees"
+**** Public visibility projects
+     - Things that can be completely public, like most of my .emacs.d
+     - This might include, e.g., my .emacs.d/ files or HOWTOs on home remodeling.
+     - These are things intended to be potentially consumed by other people.
+     - It may make sense to have multiple repos here (e.g. one for
+       .emacs.d, another for home remodeling, another for forked open
+       source projects)
+**** Limited visibility projects
+     - Things that do not NEED to be private, but make no sense to
+       publish widely, e.g. configuration settings specific to my
+       email, e.g. my uesrname, email server names and ports, etc.
+**** Private visibility projects
+     - Things that NEED to be private.  Secrets.  Keys. Etc
+     - This would probably include things specific to people, family
+       members, etc.
+   
 
-   Also note that use of =~/home= might be confusing
-   (/home/george/home/...) but I thing the idea of using =~/home= and
-   =~/work= is more clear than something like =~/george= and
-   =~/work=.
-   
-** Define rules for visibility of each top-level project
-   The rules may be context specific.  E.g. "public" for my "home"
-   context may mean "OK to publish on github", but "public" at work
-   may mean "ok to publish on the internal company wiki visible to all
-   employees"
-*** Public visibility projects
-    - Things that can be completely public, like most of my .emacs.d
-    - This might include, e.g., my .emacs.d/ files or HOWTOs on home remodeling.
-    - These are things intended to be potentially consumed by other people.
-    - It may make sense to have multiple repos here (e.g. one for
-      .emacs.d, another for home remodeling, another for forked open
-      source projects)
-*** Limited visibility projects
-    - Things that do not NEED to be private, but make no sense to
-      publish widely, e.g. configuration settings specific to my
-      email, e.g. my uesrname, email server names and ports, etc.
-*** Private visibility projects
-    - Things that NEED to be private.  Secrets.  Keys. Etc
-    - This would probably include things specific to people, family
-      members, etc.
-   
+** Place each project
+*** TODO Allowing people to check out individual projects
+    
+
 ** Pick git repository(s) appropriate to the level of sensitivity
    - e.g. public things on github, private and limited repos somewhere
      less public (e.g. git repos at work, personal git repos in
@@ -143,7 +149,7 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 
       #+end_example
 
-** Create symlinks for special cases
+** Normally, use files /in situ/
 
    In the normal case, just use files with their paths as installed, e.g.,
 
@@ -151,7 +157,41 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
    ~/home/private/family/thing1/person-thing1.org
    #+end_example
 
-   Create symlinks where needed
+** Create symlinks where needed
+*** Link whole directories
+    In some cases, it makes sense to link whole directories, e.g.
+
+    #+begin_example
+    ~/.ssh -> ~/home/private/.ssh
+    #+end_example
+
+*** Link all files in a directory
+
+    In some cases, it might make sense to link to specific files to a
+    directory (e.g. $HOME)
+
+    #+begin_example
+    lrwxrwxrwx  1 ubuntu ubuntu        46 Feb  9 10:48 .gitconfig -> /home/ubuntu/george/public/dotfiles/.gitconfig
+    lrwxrwxrwx  1 ubuntu ubuntu        43 Feb  9 10:48 .bashrc -> /home/ubuntu/george/public/dotfiles/.bashrc
+   #+end_example
+
+
+*** Last install wins/overwrites
+
+    In some cases, it might make sense to link to specific files to a
+    directory (e.g. $HOME)
+
+    #+begin_example
+    lrwxrwxrwx  1 ubuntu ubuntu        46 Feb  9 10:48 .gitconfig -> /home/ubuntu/george/public/dotfiles/.gitconfig
+    lrwxrwxrwx  1 ubuntu ubuntu        43 Feb  9 10:48 .bashrc -> /home/ubuntu/george/public/dotfiles/.bashrc
+   #+end_example
+
+
+    
+*** Case not handled: differences in indiidual files
+    - use #INCLUDE-like features
+    - use source control feature branches
+
 
 ** TODO Think about how to handle symlinks and conflicts
 
@@ -166,11 +206,6 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 
    What about cases where I want to switch between
    configs/credentials, 
-
-   #+begin_example
-  ~/.ssh -> ~/home/private/.ssh
-   #+end_example
-
    or mix?  Options would seem to be to switch out the symlinks or
    find some way to merge the contents (.e.g. add personal hosts to
    ~/work/private/.ssh/config) and maintain it that way, or find some
@@ -178,6 +213,9 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 
    This is really starting to violate the simplicity goal....
    
+*** One solution: last overwrite wins
+
+    
 *** Special cases
 
    #+begin_example
