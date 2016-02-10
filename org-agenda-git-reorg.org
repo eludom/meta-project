@@ -4,7 +4,7 @@
 #+OPTIONS: num:nil p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
 #+OPTIONS: timestamp:t title:t toc:nil todo:t |:t
 #+TITLE: Thoughts about reorganizing my projects, org-agenda files, and git repos
-#+DATE: <2016-02-10 12:05:27 Wednesday>
+#+DATE: <2016-02-10 12:50:35 Wednesday>
 #+AUTHOR: George M Jones
 #+EMAIL: gmj@pobox.com
 #+LANGUAGE: en
@@ -44,7 +44,10 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 ** Treat people like people, not projects
 * Methods
 ** Create one top-level directory per CONTEXT (home, work...)
-   e.g.
+
+   - CONTEXT :: a context is a place ("Home") or an association
+        ("work") within which a group of projects, configs and files
+        are relevant.
 
    #+begin_example
    ~/george/	# personal/things specific to me
@@ -52,7 +55,8 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
    ~/work/	# things specific to work context
    #+end_example
 
-** Create one sub-directory per SCOPE per CONTEXT (home/public, home/private)
+
+** Create one 2nd-level directory per SCOPE per CONTEXT (home/public, home/private)
 
    - SCOPE :: A SCOPE defines visibility within a context
    
@@ -91,38 +95,36 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
        members, etc.
    
 
-** Place each project
-*** TODO Allowing people to check out individual projects
-    
+
+** Create one 3rd level directory for each ENTITY
+
+   - ENTITY :: An ENTITY is a person, project, group, config, etc
+        that needs it's own collection of files, projects, configs, etc.
+
+   e.g.
+
+   #+begin_example
+   ~/home/public/.emacs.d		# my emacs configs
+   ~/home/public/elisp			# my elisp configs
+   ~/home/limited/configs		# my mail, IRC, blog configs (no secrets)
+   ~/home/private/secrets		# keys, certificates, etc.
+   ~/home/private/cat-in-the-hat	# A person around the houes
+
+   ~/work/limited/configs		# work-specific configs (mail, etc)
+   ~/work/limited/project1		# something I'm doing at work
+   #+end_example
 
 ** Pick git repository(s) appropriate to the level of sensitivity
    - e.g. public things on github, private and limited repos somewhere
      less public (e.g. git repos at work, personal git repos in
      directories or on remote servers, etc)
-** Create PROJECTNAME/ directory within each toplevel git repo
-   e.g.
-
-   #+begin_example
-   ~/home/public/.emacs.d
-   ~/home/public/elisp
-   ~/home/public/dotfiles
-   ~/home/limited/configs
-   ~/home/limited/.gitconfig
-   ~/home/private/.ssh   
-   ~/home/private/secrets
-   ~/home/private/money
-   ~/home/private/career
-   ~/home/private/family/thing1
-   ~/home/private/family/thing2
-   ~/home/private/family/cat-in-the-hat
-   #+end_example
 
 ** Create a project-PROJECTNAME.org for each project
    This may or may not be in top level directory, e.g.
 
    #+begin_example
    ~/home/public/elisp/project-elisp.org
-   ~/home/private/family/thing1/person-thing1.org # not project-thing1.org !!!
+   ~/home/private/thing1/person-thing1.org # not project-thing1.org !!!
    #+end_example
 
 ** Add the {person,project}-PROJECTNAME.org to org-agenda-files
@@ -192,6 +194,27 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
     - use #INCLUDE-like features
     - use source control feature branches
 
+
+** TODO
+   Hack link2 and friends to facilitate the linking above
+
+   - specify source dir
+   - specify target dir
+   - option to link src dir in target (e.g. =~/.ssh -> ~/home/pivate/ssh=)
+   - option to copy files to target dir instead of linking
+     + possibly with =mkdir -p=
+     + e.g.
+       #+begin_example
+       mkdir -p ~/.ssh
+       ~/.ssh/id_rsa	-> ~/home/private/id_rsa
+       ~/.ssh/id_rsa	-> ~/home/private/my_other_id_rsa
+       #+end_example
+   - possible overwrite/replacement
+     + e.g.
+       #+begin_example
+       ~/.ssh/id_rsa	-> ~/work/private/id_rsa
+       ~/.ssh/id_rsa	-> ~/home/private/my_other_id_rsa
+       #+end_example
 
 ** TODO Think about how to handle symlinks and conflicts
 
