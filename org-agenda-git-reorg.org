@@ -2,9 +2,9 @@
 #+OPTIONS: author:t broken-links:nil c:nil creator:nil
 #+OPTIONS: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t
 #+OPTIONS: num:nil p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
-#+OPTIONS: timestamp:t title:t toc:nil todo:t |:t
+#+OPTIONS: timestamp:t title:t toc:t todo:t |:t
 #+TITLE: Thoughts about reorganizing my projects, org-agenda files, and git repos
-#+DATE: <2016-02-10 12:50:35 Wednesday>
+#+DATE: <2016-02-12 09:26:20 Friday>
 #+AUTHOR: George M Jones
 #+EMAIL: gmj@pobox.com
 #+LANGUAGE: en
@@ -22,15 +22,15 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
   - All these files have different sensitivity/visibility requirements
   - It all gets complicated, hard to understand and hard to manage.
 * Goals
-** Simplify the organization of my configs and project files
-** Simplify the management of my configs and project files
+** Simplify the /organization/ of my configs and project files
+** Simplify the  /management/ of my configs and project files
    - e.g. fewer git repos
    - This will allow me to, for instance, to install my environment
      (emacs/org) on a new machine, pull down a few git repos and go.
 ** Define an organization that works in multiple contexts (home, work..)
    - e.g. I want to be able to use this for different =~/.ssh=
      directories both at home and at work
-** Restrict/Allow access as appropritate
+** Restrict/Allow access as appropriate
    - e.g. "money" and "career" projects might have different
      visibility than, say, my emacs config project
 ** Archive Old material
@@ -40,7 +40,7 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
     + e.g. I want to get to the point that everything that matters is
       in git somewhere so the local machine can die, be re-installed
       or go way and it will not impact my work (at least in terms of
-      .orgifiled projects.
+      .orgified projects.
 ** Treat people like people, not projects
 * Methods
 ** Create one top-level directory per CONTEXT (home, work...)
@@ -54,7 +54,6 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
    ~/home/	# things specific to home/family context
    ~/work/	# things specific to work context
    #+end_example
-
 
 ** Create one 2nd-level directory per SCOPE per CONTEXT (home/public, home/private)
 
@@ -76,7 +75,7 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 *** Define rules for visibility of each LEVEL OF SENSITIVITY
     The rules may be context specific.  E.g. "public" for my "home"
     CONTEXT may mean "OK to publish on github", but "public" at work
-    may mean "ok to publish on the internal company wiki visible to all
+    may mean "OK to publish on the internal company wiki visible to all
     employees"
 **** Public visibility projects
      - Things that can be completely public, like most of my .emacs.d
@@ -95,7 +94,6 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
        members, etc.
    
 
-
 ** Create one 3rd level directory for each ENTITY
 
    - ENTITY :: An ENTITY is a person, project, group, config, etc
@@ -108,7 +106,7 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
    ~/home/public/elisp			# my elisp configs
    ~/home/limited/configs		# my mail, IRC, blog configs (no secrets)
    ~/home/private/secrets		# keys, certificates, etc.
-   ~/home/private/cat-in-the-hat	# A person around the houes
+   ~/home/private/cat-in-the-hat	# A person around the house
 
    ~/work/limited/configs		# work-specific configs (mail, etc)
    ~/work/limited/project1		# something I'm doing at work
@@ -152,7 +150,6 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
       #+end_example
 
 ** Normally, use files /in situ/
-
    In the normal case, just use files with their paths as installed, e.g.,
 
    #+begin_example
@@ -180,8 +177,8 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 
 *** Last install wins/overwrites
 
-    In some cases, it might make sense to link to specific files to a
-    directory (e.g. $HOME)
+    Certain links might need to be replaced in different contexts,
+    likely by replacing the symlink
 
     #+begin_example
     lrwxrwxrwx  1 ubuntu ubuntu        46 Feb  9 10:48 .gitconfig -> /home/ubuntu/george/public/dotfiles/.gitconfig
@@ -190,33 +187,49 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 
 
     
-*** Case not handled: differences in indiidual files
+*** Case not handled: differences in individual files
+
+    Differences within individual files are a hard case.   Some
+    options for dealing with this include:
+
+    - maintain separate files
     - use #INCLUDE-like features
     - use source control feature branches
 
+** TODO  Hack link2 and friends to facilitate the linking above
 
-** TODO
-   Hack link2 and friends to facilitate the linking above
+   
+   See https://github.com/eludom/dotfiles/blob/master/bin/linkall
 
-   - specify source dir
-   - specify target dir
-   - option to link src dir in target (e.g. =~/.ssh -> ~/home/pivate/ssh=)
-   - option to copy files to target dir instead of linking
-     + possibly with =mkdir -p=
-     + e.g.
-       #+begin_example
-       mkdir -p ~/.ssh
-       ~/.ssh/id_rsa	-> ~/home/private/id_rsa
-       ~/.ssh/id_rsa	-> ~/home/private/my_other_id_rsa
-       #+end_example
-   - possible overwrite/replacement
-     + e.g.
-       #+begin_example
-       ~/.ssh/id_rsa	-> ~/work/private/id_rsa
-       ~/.ssh/id_rsa	-> ~/home/private/my_other_id_rsa
-       #+end_example
+   #+begin_example
+#
+# symlink all files in an src directory to a target directory
+#
+# usage: link2 [options] srcDir [targetDir]
+#     -v | --verbose	Echo command names
+#     -d | --debug	Additional debugging output
+#     -h | --help		This text
+#     -n | --dry-run	Do not execute
+#     -r | --remove 	Remove link/file if it exists
+#
+# targetDir is created (mkdir -p) if it does not exist.   Existing
+# symlinks are replaced.
+#
 
-** TODO Think about how to handle symlinks and conflicts
+# Examples:
+#
+#  Link all files in /etc to ./etc, creating ~./etc if needed
+#
+#    $ linkall -v /etc
+#  
+#
+#  Link all files in ~/git/public/dotfiles to $HOME, replacing existing links
+#
+#    $ linkall ~/git/public/dotfiles $HOME
+#
+   #+end_example
+
+** [1/2] Think about how to handle symlinks and conflicts
 
    In the normal case:
 
@@ -228,16 +241,23 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
    And so forth.
 
    What about cases where I want to switch between
-   configs/credentials, 
-   or mix?  Options would seem to be to switch out the symlinks or
-   find some way to merge the contents (.e.g. add personal hosts to
-   ~/work/private/.ssh/config) and maintain it that way, or find some
-   way to do automatic merging or conditional #INCLUDEs
+   configs/credentials, or mix?  Options would seem to be to switch
+   out the symlinks.
 
-   This is really starting to violate the simplicity goal....
-   
-*** One solution: last overwrite wins
+*** DONE solution: last overwrite wins.
+*** TODO not addressed: managing changes WITHIN  a file
 
+    Options:
+
+        - maintain separate files :: e.g. separate .bashrc files for
+             different contexts (home, work)
+        - #INCLUDE-like solution :: include/require/slurp-in context
+             specific things from an external file
+        - branching an merging :: Use git (or other source code
+             control system) to branch and merge differences as
+             software feature sets.
+
+    This is starting to get way too complicated.	     
     
 *** Special cases
 
@@ -251,14 +271,11 @@ Thoughts about reorganizing my projects, org-agenda files, and git repos.
 * Side Effects
   - Enables time tracking on projects  
 * Possible Issues/Open questions
-
-* Execution
 * What this does not address
   - Archival of non-project related material such as photos, videos
     and music.
   - Archival of old word processing docs, spreadsheets, etc.
-
-* Action Items
-** TODO Think about renaming THIS file and categorizing it in the new system
-** TODO Check this meta-project into github
+caa* Action Items
+** DONE Think about renaming THIS file and categorizing it in the new system
+** DONE Check this meta-project into github
 ** TODO Start re-organizing all my projects/git repos along these lines
